@@ -8,6 +8,8 @@ using System.Linq;
 
 namespace QuizService.Controllers;
 
+//TODO: Code readability is very low, some spaces needed between lines
+
 [Route("api/quizzes")]
 public class QuizController : Controller
 {
