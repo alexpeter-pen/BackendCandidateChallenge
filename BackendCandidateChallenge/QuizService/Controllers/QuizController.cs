@@ -37,7 +37,7 @@ public class QuizController : Controller
     public object Get(int id)
     {
         const string quizSql = "SELECT * FROM Quiz WHERE Id = @Id;";
-        var quiz = _connection.QuerySingle<Quiz>(quizSql, new {Id = id});
+        var quiz = _connection.QuerySingleOrDefault<Quiz>(quizSql, new {Id = id});
         if (quiz == null)
             return NotFound();
         const string questionsSql = "SELECT * FROM Question WHERE QuizId = @QuizId;";
