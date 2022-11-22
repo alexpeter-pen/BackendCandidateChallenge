@@ -76,7 +76,7 @@ public class QuizzesControllerTest
             var question = new QuestionCreateModel("The answer to everything is what?");
             var content = new StringContent(JsonConvert.SerializeObject(question));
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await client.PostAsync(new Uri(testHost.BaseAddress, $"{QuizApiEndPoint}"),content);
+            var response = await client.PostAsync(new Uri(testHost.BaseAddress, $"{QuizApiEndPoint}{quizId}"),content);
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
