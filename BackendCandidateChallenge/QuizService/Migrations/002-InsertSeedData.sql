@@ -10,3 +10,13 @@ INSERT INTO [Answer] (Text, QuestionId) VALUES ('My third answer to second q', 2
 UPDATE [Question] SET CorrectAnswerId = 5 WHERE Id = 2;
 
 INSERT INTO [Quiz] (Title) VALUES ('My second quiz');
+INSERT INTO [Question] (Text, QuizId) VALUES ('My third question', 2);
+INSERT INTO [Answer] (Text, QuestionId) VALUES ('My first answer to third q', 3);
+INSERT INTO [Answer] (Text, QuestionId) VALUES ('My second answer to third q', 3);
+UPDATE [Question] SET CorrectAnswerId = 7 WHERE Id = 3;
+INSERT INTO [Question] (Text, QuizId) VALUES ('My fourth question', 2);
+INSERT INTO [Answer] (Text, QuestionId) VALUES ('My first answer to fourth q', 4);
+INSERT INTO [Answer] (Text, QuestionId) VALUES ('My second answer to fourth q', 4);
+INSERT INTO [Answer] (Text, QuestionId) VALUES ('My third answer to fourth q', 4);
+INSERT INTO [Answer] (Text, QuestionId) VALUES ('My fourth answer to fourth q', 4);
+UPDATE [Question] SET CorrectAnswerId = 10 WHERE Id = 4;
