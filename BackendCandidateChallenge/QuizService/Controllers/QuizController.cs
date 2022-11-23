@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using QuizService.Model;
 using QuizService.Model.Domain;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using static QuizService.Model.QuizResponseModel;
 
 namespace QuizService.Controllers;
 
@@ -14,10 +16,26 @@ namespace QuizService.Controllers;
 public class QuizController : Controller
 {
     private readonly IDbConnection _connection;
+    private readonly Models.TestDatabaseContext _dbContext;
 
-    public QuizController(IDbConnection connection)
+    public QuizController(IDbConnection connection, Models.TestDatabaseContext dbContext)
     {
         _connection = connection;
+        _dbContext = dbContext;
+    }
+
+
+    // GET api/quizzes
+    [HttpGet("refact")]
+    public IEnumerable<QuizResponseModel> GetRefact()
+    {
+        return _dbContext.Quizzes //TODO: Nice to have questions included.Include(quiz => quiz.Questions)
+            .Select(quiz =>
+                new QuizResponseModel
+                {
+                    Id = quiz.Id,
+                    Title = quiz.Title
+                });
     }
 
     // GET api/quizzes
