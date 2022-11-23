@@ -6,7 +6,7 @@ using QuizService.Model;
 using QuizService.Model.Domain;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using static QuizService.Model.QuizResponseModel;
+using static QuizService.Model.QuizResponseModel; //TODO: not used and unclear purpose anyway, remove it
 
 namespace QuizService.Controllers;
 
@@ -29,7 +29,7 @@ public class QuizController : Controller
     [HttpGet("refact")]
     public IEnumerable<QuizResponseModel> GetRefact()
     {
-        return _dbContext.Quizzes //TODO: Nice to have questions included.Include(quiz => quiz.Questions)
+        return _dbContext.Quizzes //TODO: Nice to have questions included: ... .Include(quiz => quiz.Questions)
             .Select(quiz =>
                 new QuizResponseModel
                 {
@@ -56,14 +56,14 @@ public class QuizController : Controller
     [HttpGet("{id}")]
     public object Get(int id)
     {
-        const string quizSql = "SELECT * FROM Quiz WHERE Id = @Id;";
+        const string quizSql = "SELECT * FROM Quiz WHERE Id = @Id;"; //TODO: SQL scripts are messy in the code, switch to framwwork instead
         var quiz = _connection.QuerySingleOrDefault<Quiz>(quizSql, new {Id = id});
         if (quiz == null)
             return NotFound();
         const string questionsSql = "SELECT * FROM Question WHERE QuizId = @QuizId;";
         var questions = _connection.Query<Question>(questionsSql, new {QuizId = id});
         const string answersSql = "SELECT a.Id, a.Text, a.QuestionId FROM Answer a INNER JOIN Question q ON a.QuestionId = q.Id WHERE q.QuizId = @QuizId;";
-        var answers = _connection.Query<Answer>(answersSql, new {QuizId = id})
+        var answers = _connection.Query<Answer>(answersSql, new {QuizId = id}) //TODO: Too cluttered
             .Aggregate(new Dictionary<int, IList<Answer>>(), (dict, answer) => {
                 if (!dict.ContainsKey(answer.QuestionId))
                     dict.Add(answer.QuestionId, new List<Answer>());
@@ -84,12 +84,12 @@ public class QuizController : Controller
                         Id = answer.Id,
                         Text = answer.Text
                     })
-                    : new QuizResponseModel.AnswerItem[0],
+                    : new QuizResponseModel.AnswerItem[0], //TODO: Follow compiler suggestion about empty arrays
                 CorrectAnswerId = question.CorrectAnswerId
             }),
             Links = new Dictionary<string, string>
             {
-                {"self", $"/api/quizzes/{id}"},
+                {"self", $"/api/quizzes/{id}"}, //TODO: links are all around duplicated without any possibility of updating them all properly if some are changed, consolidate them in one place
                 {"questions", $"/api/quizzes/{id}/questions"}
             }
         };
@@ -99,7 +99,7 @@ public class QuizController : Controller
     [HttpPost]
     public IActionResult Post([FromBody]QuizCreateModel value)
     {
-        var sql = $"INSERT INTO Quiz (Title) VALUES('{value.Title}'); SELECT LAST_INSERT_ROWID();";
+        var sql = $"INSERT INTO Quiz (Title) VALUES('{value.Title}'); SELECT LAST_INSERT_ROWID();"; //TODO: value.Title can be anything, string should not be concatenated
         var id = _connection.ExecuteScalar(sql);
         return Created($"/api/quizzes/{id}", null);
     }
@@ -131,7 +131,7 @@ public class QuizController : Controller
     [Route("{id}/questions")]
     public IActionResult PostQuestion(int id, [FromBody]QuestionCreateModel value)
     {
-        const string sql = "INSERT INTO Question (Text, QuizId) VALUES(@Text, @QuizId); SELECT LAST_INSERT_ROWID();";
+        const string sql = "INSERT INTO Question (Text, QuizId) VALUES(@Text, @QuizId); SELECT LAST_INSERT_ROWID();"; //TODO: "multithread interference may cause sqlite3_last_insert_rowid() to return garbage", MySQL: "The ID that was generated is maintained in the server on a per-connection basis" again possible to create issues
         var questionId = _connection.ExecuteScalar(sql, new {Text = value.Text, QuizId = id});
         return Created($"/api/quizzes/{id}/questions/{questionId}", null);
     }
@@ -154,7 +154,7 @@ public class QuizController : Controller
     {
         const string sql = "DELETE FROM Question WHERE Id = @QuestionId";
         _connection.ExecuteScalar(sql, new {QuestionId = qid});
-        return NoContent();
+        return NoContent(); //TODO: No information send back, return the result of the operation
     }
 
     // POST api/quizzes/5/questions/6/answers
@@ -180,11 +180,11 @@ public class QuizController : Controller
 
     // DELETE api/quizzes/5/questions/6/answers/7
     [HttpDelete]
-    [Route("{id}/questions/{qid}/answers/{aid}")]
+    [Route("{id}/questions/{qid}/answers/{aid}")] //TODO: clumsy API with three parameters in various positions, better to think about different approach
     public IActionResult DeleteAnswer(int id, int qid, int aid)
     {
         const string sql = "DELETE FROM Answer WHERE Id = @AnswerId";
         _connection.ExecuteScalar(sql, new {AnswerId = aid});
-        return NoContent();
+        return NoContent(); //TODO: No information send back, return the result of the operation
     }
 }
